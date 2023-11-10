@@ -13,6 +13,7 @@ import {
   useLoaderData,
 } from '@remix-run/react';
 import { LoaderFunction } from '@remix-run/router';
+import { Analytics } from '@vercel/analytics/react';
 import { Sidebar } from '~/components/Sidebar/Sidebar';
 import { nyaTheme } from '~/theme';
 import React, { useContext, useEffect, useMemo } from 'react';
@@ -123,6 +124,7 @@ const AppDocument = withEmotionCache(({ children }: AppDocumentProps, emotionCac
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <Analytics />
       </body>
     </html>
   );
