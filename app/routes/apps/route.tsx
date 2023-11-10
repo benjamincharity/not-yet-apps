@@ -3,19 +3,13 @@ import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { json, LoaderFunctionArgs } from '@remix-run/router';
 import { AppShape, getApps } from '~/data/app.queries';
 
-import type { MetaFunction } from '@remix-run/node';
-
-export const meta: MetaFunction = () => {
-  return [{ title: 'NotYetApps' }, { name: 'description', content: 'Welcome to NotYeyApps!' }];
-};
-
 export async function loader({ params }: LoaderFunctionArgs) {
   const apps = await getApps(params);
   console.log('apps in loader: ', apps);
   return json(apps);
 }
 
-export default function Index() {
+export default function Route() {
   const result = useLoaderData<typeof loader>();
   console.log('Apps, result: ', result);
 
