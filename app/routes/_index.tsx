@@ -1,6 +1,7 @@
 import { Box, Heading, Image, LinkBox, LinkOverlay, SimpleGrid, Text } from '@chakra-ui/react';
 import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 import { json, LoaderFunctionArgs } from '@remix-run/router';
+import { createServerClient } from '@supabase/auth-helpers-remix';
 import { AppShape, getApps } from '~/data/app.queries';
 
 import type { MetaFunction } from '@remix-run/node';
@@ -9,21 +10,35 @@ export const meta: MetaFunction = () => {
   return [{ title: 'NotYetApps' }, { name: 'description', content: 'Welcome to NotYeyApps!' }];
 };
 
-export async function loader({ params }: LoaderFunctionArgs) {
-  const apps = await getApps(params);
-  console.log('apps in loader: ', apps);
-  return json(apps);
+export async function loader({ request }: LoaderFunctionArgs) {
+  const response = new Response();
+  const supabaseClient = createServerClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
+    { request, response }
+  );
+
+  const { data } = await supabaseClient.from('apps').select('*');
+
+  return json(
+    { data },
+    {
+      headers: response.headers,
+    }
+  );
 }
 
 export default function Index() {
-  const result = useLoaderData<typeof loader>();
+  const response = useLoaderData<typeof loader>();
+  const result = response?.data ?? [];
+  const total = result.length ?? 0;
   console.log('Apps, result: ', result);
 
   return (
     <Box p={4}>
-      <Box mb={4}>Apps count: {result?.total}</Box>
+      <Box mb={4}>Apps count: {total}</Box>
       <SimpleGrid columns={{ base: 1, sm: 2, md: 3, lg: 4 }} gap={4}>
-        {result?.apps?.map((app: AppShape) => (
+        {result?.map((app: AppShape) => (
           <LinkBox as={'article'} outline={'2px solid'} key={app.id} rounded={'md'}>
             <LinkOverlay as={NavLink} to={`/app/${app.id}`}>
               <Heading fontSize={'lg'}>{app.name}</Heading>
