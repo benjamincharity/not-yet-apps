@@ -7,28 +7,15 @@ export default function Login({
   supabase: TypedSupabaseClient;
   session: MaybeSession;
 }) {
-  const handleEmailLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: 'jon@supabase.com',
-      password: 'password',
-    });
-
-    if (error) {
-      console.log({ error });
-    }
-  };
-
-  const handleGitHubLogin = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'github',
+  const handleLogin = async () => {
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email: 'example@email.com',
       options: {
-        redirectTo: `${location.origin}/callback`,
+        // set this to false if you do not want the user to be automatically signed up
+        shouldCreateUser: false,
+        emailRedirectTo: 'https://example.com/welcome',
       },
     });
-
-    if (error) {
-      console.log({ error });
-    }
   };
 
   const handleLogout = async () => {
@@ -43,8 +30,7 @@ export default function Login({
     <button onClick={handleLogout}>Logout</button>
   ) : (
     <>
-      <button onClick={handleEmailLogin}>Email Login</button>
-      <button onClick={handleGitHubLogin}>GitHub Login</button>
+      <button onClick={handleLogin}>Login</button>
     </>
   );
 }

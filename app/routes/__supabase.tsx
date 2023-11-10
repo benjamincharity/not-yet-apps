@@ -1,11 +1,11 @@
 import { json } from '@remix-run/node';
 import { Outlet, useFetcher, useLoaderData } from '@remix-run/react';
-import { createBrowserClient } from '@supabase/auth-helpers-remix';
+import { createBrowserClient, createServerClient } from '@supabase/auth-helpers-remix';
 import Login from '~/components/Login';
 import { useEffect, useState } from 'react';
 
 import type { Session, SupabaseClient } from '@supabase/auth-helpers-remix';
-import type { Database } from 'db_types';
+import type { Database } from 'database.types';
 
 export type TypedSupabaseClient = SupabaseClient<Database>;
 export type MaybeSession = Session | null;
@@ -33,7 +33,8 @@ export const loader = async ({ request }: LoaderArgs) => {
   // This is used to make sure the session is available immediately upon rendering
   const response = new Response();
 
-  const supabase = createServerClient({ request, response });
+  // const supabase = createServerClient({ request, response });
+  // const supabase = createClient('https://xyzcompany.supabase.co', 'public-anon-key')
 
   const {
     data: { session },
